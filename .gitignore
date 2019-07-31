@@ -1,0 +1,11 @@
+#obj and exe file
+boot
+boot.o
+head
+head.o
+*.swp
+bochsout.txt
+system
+head.lst
+System.map
+
