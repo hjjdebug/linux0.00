@@ -1,0 +1,32 @@
+0. download bochs 2.4.6
+
+search it in www.mirrorservice.org and download it here, and then decompress
+it.
+
+1. compile bochs with gdbstub support:
+
+$ cd bochs-2.4.6
+$ ./configure --enable-plugins --enable-disasm --enable-gdb-stub 
+$ make
+$ make install
+
+2. start kernel in bochs
+$ cd linux-0.00
+$ bochs -q -f tools/bochs/bochsrc/bochsrc-0.00.bxrc
+or 
+$ make run
+
+3. debug kernel with bochs gdbstub
+start the kernel with bochs gdbstub
+
+$ cd linux-0.00
+$ make debug
+
+and then start the gdb to connect the 1234 port
+
+$ cd linux-0.00
+$ gdb -q tools/system
+(gdb) b main
+(gdb) target remote :1234
+(gdb) s
+(gdb) ...

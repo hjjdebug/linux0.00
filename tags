@@ -1,0 +1,55 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AS	Makefile	/^AS	=as $/;"	m
+AS86	Makefile	/^AS86	=as86 -0 -a$/;"	m
+ASFLAGS	Makefile	/^ASFLAGS = --32 -g -alh$/;"	m
+BOCHS	Makefile	/^BOCHS = bochs$/;"	m
+BOOTSEG	boot.s	/^BOOTSEG = 0x07c0$/;"	d
+LD	Makefile	/^LD	=ld$/;"	m
+LD86	Makefile	/^LD86	=ld86 -0$/;"	m
+LDFLAGS	Makefile	/^LDFLAGS =-m elf_i386 -Ttext 0 -e startup_32  -M  $/;"	m
+LDT0_SEL	head.s	/^LDT0_SEL	= 0x28$/;"	d
+LDT1_SEL	head.s	/^LDT1_SEL	= 0x38$/;"	d
+SCRN_SEL	head.s	/^SCRN_SEL	= 0x18$/;"	d
+SYSLEN	boot.s	/^SYSLEN  = 17				! sectors occupied.$/;"	d
+SYSSEG	boot.s	/^SYSSEG  = 0x1000			! system loaded at 0x10000 (65536).$/;"	d
+TSS0_SEL	head.s	/^TSS0_SEL	= 0x20$/;"	d
+TSS1_SEL	head.s	/^TSS1_SEL	= 0X30$/;"	d
+die	boot.s	/^die:	jmp	die$/;"	l
+end_gdt	head.s	/^end_gdt:$/;"	l
+entry	boot.s	/^entry start$/;"	l
+gdt	boot.s	/^gdt:	.word	0,0,0,0		! dummy$/;"	l
+gdt	head.s	/^gdt:	.quad 0x0000000000000000	\/* NULL descriptor *\/$/;"	l
+gdt_48	boot.s	/^gdt_48: .word	0x7ff		! gdt limit=2048, 256 GDT entries$/;"	l
+go	boot.s	/^go:	mov	ax,cs$/;"	l
+idt	head.s	/^idt:	.fill 256,8,0		# idt is uninitialized$/;"	l
+idt_48	boot.s	/^idt_48: .word	0		! idt limit=0$/;"	l
+ignore_int	head.s	/^ignore_int:$/;"	l
+init_stack	head.s	/^init_stack:                          # Will be used as user stack for task0.$/;"	l
+krn_stk0	head.s	/^krn_stk0:$/;"	l
+krn_stk1	head.s	/^krn_stk1:$/;"	l
+ldt0	head.s	/^ldt0:	.quad 0x0000000000000000$/;"	l
+ldt1	head.s	/^ldt1:	.quad 0x0000000000000000$/;"	l
+lgdt_opcode	head.s	/^lgdt_opcode:$/;"	l
+lidt_opcode	head.s	/^lidt_opcode:$/;"	l
+load_system	boot.s	/^load_system:$/;"	l
+ok_load	boot.s	/^ok_load:$/;"	l
+rp_sidt	head.s	/^rp_sidt:$/;"	l
+s	Makefile	/^	dd bs=32 if=boot of=Image skip=1$/;"	m
+s	Makefile	/^	dd bs=8192 if=Image of=\/dev\/fd0$/;"	m
+setup_gdt	head.s	/^setup_gdt:$/;"	l
+setup_idt	head.s	/^setup_idt:$/;"	l
+start	boot.s	/^start:$/;"	l
+startup_32	head.s	/^startup_32:$/;"	l
+system_interrupt	head.s	/^system_interrupt:$/;"	l
+task0	head.s	/^task0:$/;"	l
+task1	head.s	/^task1:$/;"	l
+timer_interrupt	head.s	/^timer_interrupt:$/;"	l
+tss0	head.s	/^tss0:	.long 0 			\/* back link *\/$/;"	l
+tss1	head.s	/^tss1:	.long 0 			\/* back link *\/$/;"	l
+usr_stk1	head.s	/^usr_stk1:$/;"	l
+write_char	head.s	/^write_char:$/;"	l
