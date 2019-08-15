@@ -139,8 +139,8 @@ timer_interrupt:
 	push %ds
 	pushl %eax
 	movl $0x10, %eax
-	mov %ax, %ds
-	movb $0x20, %al
+	mov %ax, %ds		#设置内核数据段
+	movb $0x20, %al		#发送EOI, 使8259可以继续响应硬件中断请求
 	outb %al, $0x20
 	movl $1, %eax
 	cmpl %eax, current

@@ -3,14 +3,16 @@
 AS86	=as86 -0 -a
 LD86	=ld86 -0
 
-# AS create 32 bits code, 
-# -alh turn on list with high level assemble 
 AS	=as 
+# -32 ,AS create 32 bits code, 
+# -alh turn on list with high level assemble 
 ASFLAGS = --32 -g -alh
 
-#link to 32bit elf format,
-#-M , print Map
 LD	=ld
+#-m elf_i386, link to 32bit elf format,
+#-Ttext 0 ,要把text段定位与0地址，
+#-e startup_32 ,定义入口为startup_32没有意义了，因为这个elf文件 #被抽取成了二进制影像文件
+#-M , 生成map 文件
 LDFLAGS =-m elf_i386 -Ttext 0 -e startup_32  -M  
 
 #debug
