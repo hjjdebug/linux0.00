@@ -18,11 +18,11 @@ go:	mov	ax,cs
 ! ok, we've written the message, now
 load_system:
 	mov	dx,#0x0000		! 磁头号
-	mov	cx,#0x0002		! 扇区号
+	mov	cx,#0x0002		! 扇区号第2个, 第一个是引导扇区
 	mov	ax,#SYSSEG		 
 	mov	es,ax			! 目标基地址
-	xor	bx,bx			! 估计是偏移
-	mov	ax,#0x200+SYSLEN	!服务号2, + 数据长度(扇区数)
+	xor	bx,bx			! 清bx
+	mov	ax,#0x200+SYSLEN	!服务号2, + 数据长度(扇区数), 8K 即可
 	int 	0x13
 	jnc	ok_load			! 加载到了0x1000 地址
 die:	jmp	die
@@ -34,7 +34,7 @@ ok_load:
 	mov	ds, ax
 	xor	ax, ax
 	mov	es, ax
-	mov	cx, #0x2000
+	mov	cx, #0x2000		!长度8K
 	sub	si,si
 	sub	di,di
 	rep
@@ -46,17 +46,17 @@ ok_load:
 
 ! absolute address 0x00000, in 32-bit protected mode.
 	mov	ax,#0x0001	! protected mode (PE) bit
-	lmsw	ax		! This is it!
-	jmpi	0,8		! jmp offset 0 of segment 8 (cs)
+	lmsw	ax		! This is it! 设置保护模式位
+	jmpi	0,8		! jmp offset 0 of segment 8 (长跳转，gdt 表中的偏移为8,付给cs,段式寻址，其段地址为0)
 
-gdt:	.word	0,0,0,0		! dummy
+gdt:	.word	0,0,0,0		! dummy, 64bits (
 
-	.word	0x07FF		! 8Mb - limit=2047 (2048*4096=8Mb)
+	.word	0x07FF		! 8Mb - limit=2047 (2048*4096=8Mb) 代码段,起始偏移位8
 	.word	0x0000		! base address=0x00000
 	.word	0x9A00		! code read/exec
 	.word	0x00C0		! granularity=4096, 386
 
-	.word	0x07FF		! 8Mb - limit=2047 (2048*4096=8Mb)
+	.word	0x07FF		! 8Mb - limit=2047 (2048*4096=8Mb) 数据段
 	.word	0x0000		! base address=0x00000
 	.word	0x9200		! data read/write
 	.word	0x00C0		! granularity=4096, 386

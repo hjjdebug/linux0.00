@@ -83,7 +83,7 @@ log: bochsout.txt
 # Examples:
 #   vga_update_interval: 250000
 #=======================================================================
-vga_update_interval: 300000
+#vga_update_interval: 300000
 
 
 #=======================================================================
@@ -93,7 +93,7 @@ vga_update_interval: 300000
 # Examples:
 #   keyboard_serial_delay: 200
 #=======================================================================
-keyboard_serial_delay: 200
+#keyboard_serial_delay: 200
 
 #=======================================================================
 # KEYBOARD_PASTE_DELAY:
@@ -104,7 +104,7 @@ keyboard_serial_delay: 200
 # default of 100000 usec (.1 seconds) was chosen because it works 
 # consistently in Windows.
 #=======================================================================
-keyboard_paste_delay: 100000
+#keyboard_paste_delay: 100000
 
 #=======================================================================
 # FLOPPY_COMMAND_DELAY:
@@ -135,5 +135,3 @@ keyboard_paste_delay: 100000
 #
 #=======================================================================
 #ips: 4000000
-
-

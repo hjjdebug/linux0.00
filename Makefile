@@ -20,6 +20,7 @@ BOCHS = bochs
 
 all:	Image
 
+#boot 删掉前面32bytes才是512bytes 的引导扇区
 Image: boot system
 	dd bs=32 if=boot of=Image skip=1
 	objcopy -O binary system head
@@ -44,7 +45,7 @@ clean:
 
 
 run:
-	$(BOCHS) -q -f tools/bochs/bochsrc/bochsrc-0.00.bxrc
+	bochsdbg -q -f tools/bochs/bochsrc/bochsrc-0.00.bxrc
 debug:
-	$(BOCHS) -q -f tools/bochs/bochsrc/bochsrc-0.00-gdb.bxrc
-	debug:
+#	bochsgdb -q -f tools/bochs/bochsrc/bochsrc-0.00-gdb.bxrc
+	qemu -m 16 -boot a -fda Image -s -S

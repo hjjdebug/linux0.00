@@ -22,7 +22,7 @@ TSS1_SEL	head.s	/^TSS1_SEL	= 0X30$/;"	d
 die	boot.s	/^die:	jmp	die$/;"	l
 end_gdt	head.s	/^end_gdt:$/;"	l
 entry	boot.s	/^entry start$/;"	l
-gdt	boot.s	/^gdt:	.word	0,0,0,0		! dummy$/;"	l
+gdt	boot.s	/^gdt:	.word	0,0,0,0		! dummy, 64bits ($/;"	l
 gdt	head.s	/^gdt:	.quad 0x0000000000000000	\/* NULL descriptor *\/$/;"	l
 gdt_48	boot.s	/^gdt_48: .word	0x7ff		! gdt limit=2048, 256 GDT entries$/;"	l
 go	boot.s	/^go:	mov	ax,cs$/;"	l
