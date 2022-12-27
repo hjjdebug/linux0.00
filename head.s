@@ -107,7 +107,7 @@ write_char:
 	mov %bx, %gs		#重设gs段寄存器，使它执行一个新的段基址0xb8000
 	movl scr_loc, %ebx		# scr_loc 是个内存, 最初设置为0
 	shl $1, %ebx				# 每个位置按word存储，低byte是字符，高byte是属性
-	movb %al, %gs:(%ebx)	#操作该基址下的内存
+	movb %al, %gs:(%ebx)	# 将al 存入该内存地址
 	shr $1, %ebx
 	incl %ebx
 	cmpl $2000, %ebx		# 80*25 字符显示
