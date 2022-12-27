@@ -48,4 +48,7 @@ run:
 	bochsdbg -q -f tools/bochs/bochsrc/bochsrc-0.00.bxrc
 debug:
 #	bochsgdb -q -f tools/bochs/bochsrc/bochsrc-0.00-gdb.bxrc
+#
+#	-s: equals to -gdb tcp:1234. -S: freeze CPU at startup
+#	-boot a: a disk is boot disk. -fda Image: file Image is disk a
 	qemu -m 16 -boot a -fda Image -s -S
