@@ -44,11 +44,16 @@ clean:
 	rm -f Image System.map core boot head *.o system
 
 
+bochs-run:
+	$(BOCHS) -q -f tools/bochs/bochsrc/bochsrc-0.00.bxrc
+bochs-debug:
+	$(BOCHS) -q -f tools/bochs/bochsrc/bochsrc-0.00-gdb.bxrc
 run:
-	bochsdbg -q -f tools/bochs/bochsrc/bochsrc-0.00.bxrc
+#想摆脱Specify the 'raw' format explicitly to remove the restrictions.,用下面命令
+	qemu-system-i386 -m 16M -boot a  -drive if=floppy,file=Image,format=raw 
+#	qemu-system-i386 -m 16M -boot a -fda Image
+
 debug:
-#	bochsgdb -q -f tools/bochs/bochsrc/bochsrc-0.00-gdb.bxrc
-#
-#	-s: equals to -gdb tcp:1234. -S: freeze CPU at startup
-#	-boot a: a disk is boot disk. -fda Image: file Image is disk a
-	qemu -m 16 -boot a -fda Image -s -S
+#	qemu-system-i386 -m 16M -boot a -fda Image -s -S 
+	qemu-system-i386 -m 16M -boot a  -drive if=floppy,file=Image,format=raw -s -S
+

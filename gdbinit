@@ -2,12 +2,13 @@
 #
 # DESCRIPTION: A user-friendly gdb configuration file, for x86/x86_64 and ARM platforms.
 #
-# REVISION : 8.0.5 (18/08/2013)
+# REVISION : 9.0 (23/06/2019)
 #
 # CONTRIBUTORS: mammon_, elaine, pusillus, mong, zhang le, l0kit,
 #               truthix the cyberpunk, fG!, gln
 #
-# FEEDBACK: http://reverse.put.as - reverser@put.as
+# FEEDBACK: https://reverse.put.as - reverser@put.as
+# GITHUB: https://github.com/gdbinit/Gdbinit
 #
 # NOTES: 'help user' in gdb will list the commands/descriptions in this file
 #        'context on' now enables auto-display of context screen
@@ -15,54 +16,23 @@
 # MAC OS X NOTES: If you are using this on Mac OS X, you must either attach gdb to a process
 #                 or launch gdb without any options and then load the binary file you want to analyse with "exec-file" option
 #                 If you load the binary from the command line, like $gdb binary-name, this will not work as it should
-#                 For more information, read it here http://reverse.put.as/2008/11/28/apples-gdb-bug/
+#                 For more information, read it here https://reverse.put.as/2008/11/28/apples-gdb-bug/
 #
-# UPDATE: This bug can be fixed in gdb source. Refer to http://reverse.put.as/2009/08/10/fix-for-apples-gdb-bug-or-why-apple-forks-are-bad/
-#         and http://reverse.put.as/2009/08/26/gdb-patches/ (if you want the fixed binary for i386)
+# UPDATE: This bug can be fixed in gdb source. Refer to https://reverse.put.as/2009/08/10/fix-for-apples-gdb-bug-or-why-apple-forks-are-bad/
+#         and https://reverse.put.as/2009/08/26/gdb-patches/ (if you want the fixed binary for i386)
 #
-#         An updated version of the patch and binary is available at http://reverse.put.as/2011/02/21/update-to-gdb-patches-fix-a-new-bug/
+#         An updated version of the patch and binary is available at https://reverse.put.as/2011/02/21/update-to-gdb-patches-fix-a-new-bug/
 #
 # iOS NOTES: iOS gdb from Cydia (and Apple's) suffer from the same OS X bug.
 #			 If you are using this on Mac OS X or iOS, you must either attach gdb to a process
 #            or launch gdb without any options and then load the binary file you want to analyse with "exec-file" option
 #            If you load the binary from the command line, like $gdb binary-name, this will not work as it should
-#            For more information, read it here http://reverse.put.as/2008/11/28/apples-gdb-bug/
+#            For more information, read it here https://reverse.put.as/2008/11/28/apples-gdb-bug/
 #
 # CHANGELOG: (older changes at the end of the file)
 #
-#   Version 8.0.6 (05/09/2013)
-#     - Add patch command to convert bytes to little-endian and patch memory
-#
-#   Version 8.0.5 (18/08/2013)
-#     - Add commands header and loadcmds to dump Mach-O header information
-#     - Other fixes and additions from previous commits
-#
-#   Version 8.0.4 (08/05/2013)
-#     - Detect automatically 32 or 64 bits archs using sizeof(void*). 
-#       Thanks to Tyilo for the simple but very effective idea!
-#     - Typo in hexdump command also fixed by vuquangtrong.
-#     - Add shortcuts to attach to VMware kernel debugging gdb stub (kernel32 and kernel64)
-#
-#   Version 8.0.3 (21/03/2013)
-#	  - Add option to colorize or not output (thanks to argp and skier for the request and ideas!)
-#     - Convert the escape codes into functions so colors can be easily customized
-#	  - Other enhancements available at git commit logs
-#       Thanks to Plouj, argp, xristos for their ideas and fixes!
-#
-#   Version 8.0.2 (31/07/2012)
-#     - Merge pull request from mheistermann to support local modifications in a .gdbinit.local file
-#     - Add a missing opcode to the stepo command
-#
-#   Version 8.0.1 (23/04/2012)
-#     - Small bug fix to the attsyntax and intelsyntax commands (changing X86 flavor variable was missing)
-#
-#   Version 8.0 (13/04/2012)
-#     - Merged x86/x64 and ARM versions
-#     - Added commands intelsyntax and attsyntax to switch between x86 disassembly flavors
-#     - Added new configuration variables ARM, ARMOPCODES, and X86FLAVOR
-#     - Code cleanups and fixes to the indentation
-#     - Bug fixes to some ARM related code
-#     - Added the dumpmacho command to memory dump the mach-o header to a file
+#   Version 9.0
+#     Fixes to make everything work with GNU/GDB 8.3+
 #
 #   TODO:
 #
@@ -76,14 +46,16 @@ set $COLOREDPROMPT = 1
 # color the first line of the disassembly - default is green, if you want to change it search for
 # SETCOLOR1STLINE and modify it :-)
 set $SETCOLOR1STLINE = 0
+# set to 0 to remove disassembly display (useful for scripted commands mass dumping)
+set $SHOWDISASM = 1
 # set to 0 to remove display of objectivec messages (default is 1)
 set $SHOWOBJECTIVEC = 1
 # set to 0 to remove display of cpu registers (default is 1)
 set $SHOWCPUREGISTERS = 1
 # set to 1 to enable display of stack (default is 0)
-set $SHOWSTACK = 1
+set $SHOWSTACK = 0
 # set to 1 to enable display of data window (default is 0)
-set $SHOWDATAWIN = 1
+set $SHOWDATAWIN = 0
 # set to 0 to disable colored display of changed registers
 set $SHOWREGCHANGES = 1
 # set to 1 so skip command to execute the instruction at the new location
@@ -93,14 +65,17 @@ set $SKIPEXECUTE = 0
 # 1 = use stepo (do not get into calls), 0 = use stepi (step into calls)
 set $SKIPSTEP = 1
 # show the ARM opcodes - change to 0 if you don't want such thing (in x/i command)
-set $ARMOPCODES = 1
+set $ARMOPCODES = 0
 # x86 disassembly flavor: 0 for Intel, 1 for AT&T
-set $X86FLAVOR = 1
+set $X86FLAVOR = 0
 # use colorized output or not
 set $USECOLOR = 1
 # to use with remote KDP
 set $KDP64BITS = -1
 set $64BITS = 0
+
+# macOS version works better with this setting off
+set startup-with-shell off
 
 set confirm off
 set verbose off
@@ -117,17 +92,16 @@ set width 0
 set $SHOW_CONTEXT = 1
 set $SHOW_NEST_INSN = 0
 
-set $CONTEXTSIZE_STACK = 6 
+set $CONTEXTSIZE_STACK = 6
 set $CONTEXTSIZE_DATA  = 8
 set $CONTEXTSIZE_CODE  = 8
-set $data_addr = 0x400000
+
 # __________________end gdb options_________________
 #
 
 # __________________color functions_________________
 #
 # color codes
-
 set $BLACK = 0
 set $RED = 1
 set $GREEN = 2
@@ -139,9 +113,8 @@ set $WHITE = 7
 
 # CHANGME: If you want to modify the "theme" change the colors here
 #          or just create a ~/.gdbinit.local and set these variables there
-
 set $COLOR_REGNAME = $GREEN
-set $COLOR_REGVAL = $CYAN
+set $COLOR_REGVAL = $BLACK
 set $COLOR_REGVAL_MODIFIED  = $RED
 set $COLOR_SEPARATOR = $BLUE
 set $COLOR_CPUFLAGS = $RED
@@ -155,7 +128,7 @@ define color
  	else
  		# RED
 	 	if $arg0 == 1
-	 		echo \033[31m
+	 		echo \[\e[0;31m\]
 	 	else
 	 		# GREEN
 	 		if $arg0 == 2
@@ -199,7 +172,8 @@ end
 
 define color_bold
     if $USECOLOR == 1
-	   echo \033[1m
+	   #echo \033[1m
+       echo \[\e[1m\]
     end
 end
 
@@ -216,7 +190,7 @@ source ~/.gdbinit.local
 
 # can't use the color functions because we are using the set command
 if $COLOREDPROMPT == 1
-	set prompt \033[31mgdb$ \033[0m
+	set extended-prompt \[\e[0;31m\]gdb$ \[\e[0m\]
 end
 
 # Initialize these variables else comparisons will fail for coloring
@@ -313,7 +287,11 @@ define bp
     if $argc != 1
         help bp
     else
-        break $arg0
+        if $ASLR != 0
+            break ($arg0 + $ASLR)
+        else
+            break $arg0
+        end
     end
 end
 document bp
@@ -1392,7 +1370,6 @@ end
 
 
 # __________hex/ascii dump an address_________
-
 define ascii_char
     if $argc != 1
         help ascii_char
@@ -1498,7 +1475,6 @@ end
 
 
 # _______________data window__________________
-
 define ddump
     if $argc != 1
         help ddump
@@ -1513,6 +1489,7 @@ define ddump
                 printf "[0x%04X:0x%08X]", $ds, $data_addr
             end
         end
+
     	color $COLOR_SEPARATOR
     	printf "------------------------"
         printf "-------------------------------"
@@ -1542,7 +1519,7 @@ define dd
         help dd
     else
         set $data_addr = $arg0
-        ddump 3 
+        ddump 0x10
     end
 end
 document dd
@@ -1582,6 +1559,20 @@ define datawin
                     end
                 end
             end
+        else
+            if ((($esi >> 0x18) == 0x40) || (($esi >> 0x18) == 0x08) || (($esi >> 0x18) == 0xBF))
+                set $data_addr = $esi
+            else
+                if ((($edi >> 0x18) == 0x40) || (($edi >> 0x18) == 0x08) || (($edi >> 0x18) == 0xBF))
+                    set $data_addr = $edi
+                else
+                    if ((($eax >> 0x18) == 0x40) || (($eax >> 0x18) == 0x08) || (($eax >> 0x18) == 0xBF))
+                        set $data_addr = $eax
+                    else
+                        set $data_addr = $esp
+                    end
+                end
+            end
         end
     end
     ddump $CONTEXTSIZE_DATA
@@ -1598,7 +1589,6 @@ end
 ################################
 # Huge mess going here :) HAHA #
 ################################
-
 define dumpjump
     if $ARM == 1
         ## Most ARM and Thumb instructions are conditional!
@@ -1616,6 +1606,7 @@ define dumpjump
         else
             set $_t_flag = 0
         end
+
         if $_t_flag == 0
 	        set $_lastbyte = *(unsigned char *)($pc+3)
 	        #set $_bit31 = ($_lastbyte >> 7) & 1
@@ -1639,6 +1630,7 @@ define dumpjump
         set $_byte2 = *(unsigned char *)($pc+1)
         ## and now check what kind of jump we have (in case it's a jump instruction)
         ## I changed the flags routine to save the flag into a variable, so we don't need to repeat the process :) (search for "define flags")
+
         ## opcode 0x77: JA, JNBE (jump if CF=0 and ZF=0)
         ## opcode 0x0F87: JNBE, JA
         if ( ($_byte1 == 0x77) || ($_byte1 == 0x0F && $_byte2 == 0x87) )
@@ -2016,7 +2008,7 @@ set $displayobjectivec = 0
 define context 
     color $COLOR_SEPARATOR
     if $SHOWCPUREGISTERS == 1
-	    printf "----------------------------------------"
+        printf "----------------------------------------"
 	    printf "----------------------------------"
 	    if ($64BITS == 1)
 	        printf "---------------------------------------------"
@@ -2031,7 +2023,7 @@ define context
     if $SHOWSTACK == 1
     	color $COLOR_SEPARATOR
 		if $ARM == 1
-       printf "[0x%08X]", $sp
+            printf "[0x%08X]", $sp
 		else
         if ($64BITS == 1)
 		        printf "[0x%04X:0x%016lX]", $ss, $rsp
@@ -2068,10 +2060,12 @@ define context
           		set $objectivec = $eax
       	    	set $displayobjectivec = 1
     	    end
+
         	if ($__byte == 0x4245489)
          		set $objectivec = $edx
      	    	set $displayobjectivec = 1
     	    end
+
         	if ($__byte == 0x4244c89)
          		set $objectivec = $ecx
      	    	set $displayobjectivec = 1
@@ -2112,51 +2106,54 @@ define context
     end
     color_reset
 # and this is the end of this little crap
+
     if $SHOWDATAWIN == 1
         datawin
     end
-    color $COLOR_SEPARATOR
-    printf "--------------------------------------------------------------------------"
-    if ($64BITS == 1)
-	    printf "---------------------------------------------"
-	end
-	color $COLOR_SEPARATOR
-	color_bold
-    printf "[code]\n"
-    color_reset
-    set $context_i = $CONTEXTSIZE_CODE
-    if ($context_i > 0)
-        if ($SETCOLOR1STLINE == 1)	
-	        color $GREEN
-            if ($ARM == 1)
-                #       | $cpsr.t (Thumb flag)
-                x/i (unsigned int)$pc | (($cpsr >> 5) & 1)
-            else
-    	        x/i $pc
-            end
-	        color_reset
-	    else
-            if ($ARM == 1)
-                #       | $cpsr.t (Thumb flag)
-	              x/i (unsigned int)$pc | (($cpsr >> 5) & 1)
-            else
-                x/i $pc
-            end
-	    end
-        set $context_i--
-    end
-    while ($context_i > 0)
-        x /i
-        set $context_i--
+    if $SHOWDISASM == 1
+        color $COLOR_SEPARATOR
+        printf "--------------------------------------------------------------------------"
+        if ($64BITS == 1)
+	       printf "---------------------------------------------"
+	   end
+	   color $COLOR_SEPARATOR
+	   color_bold
+        printf "[code]\n"
+        color_reset
+        set $context_i = $CONTEXTSIZE_CODE
+        if ($context_i > 0)
+            if ($SETCOLOR1STLINE == 1)	
+	           color $GREEN
+                if ($ARM == 1)
+                    #       | $cpsr.t (Thumb flag)
+                    x/i (unsigned int)$pc | (($cpsr >> 5) & 1)
+                else
+    	            x/i $pc
+                end
+	           color_reset
+	       else
+                if ($ARM == 1)
+                    #       | $cpsr.t (Thumb flag)
+	                 x/i (unsigned int)$pc | (($cpsr >> 5) & 1)
+                else
+                    x/i $pc
+                end
+	       end
+            set $context_i--
+        end
+        while ($context_i > 0)
+            x /i
+            set $context_i--
+        end
     end
     color $COLOR_SEPARATOR
     printf "----------------------------------------"
     printf "----------------------------------------"
     if ($64BITS == 1)
         printf "---------------------------------------------\n"
-	else
-	    printf "\n"
-	end
+    else
+        printf "\n"
+    end
     color_reset
 end
 document context
@@ -2186,7 +2183,6 @@ end
 
 
 # _______________process control______________
-
 define n
     if $argc == 0
         nexti
@@ -2205,27 +2201,14 @@ Syntax: n <NUM>
 | This is alias for nexti.
 end
 
-define M
-	next
-	if $argc >=1
-		help M
-	end
-end
-document M
-Syntax: M
-| step one source line 
-| if the source line call a subroutine, it will step over it
-| this is alias for next.
-end
-
 
 define go
     if $argc == 0
         stepi
     end
     if $argc == 1
-    	stepi $arg0
-	end
+        stepi $arg0
+    end
     if $argc > 1
         help go
     end
@@ -2297,7 +2280,6 @@ end
 #### WARNING ! WARNING !!
 #### More more messy stuff starting !!!
 #### I was thinking about how to do this and then it ocurred me that it could be as simple as this ! :)
-
 define stepoframework
     if $ARM == 1
         # bl and bx opcodes
@@ -2359,6 +2341,7 @@ define stepoframework
             # 32 bits instructions in Thumb are divided into two half words
         	set $_hw1 = *(unsigned short*)($pc)
         	set $_hw2 = *(unsigned short*)($pc+2)
+	
         	# bl/blx (immediate)
         	# hw1: bits 15-11: 1 1 1 1 0
         	# hw2: bits 15-14: 1 1 ; BL bit 12: 1 ; BLX bit 12: 0
@@ -2463,7 +2446,6 @@ end
 
 
 # FIXME: ARM
-
 define skip
 	x/2i $pc
 	set $instruction_size = (int)($_ - $pc)
@@ -2649,7 +2631,6 @@ end
 
 
 # Overflow (V), bit 28
-
 define cfv
     if $ARM == 1
     	set $tempflag = $cpsr->v
@@ -2672,11 +2653,11 @@ end
 # armv7 has other nops
 # FIXME: make sure that the interval fits the 32bits address for arm and 16bits for thumb
 # status: works, fixme
-
 define nop
     if ($argc > 2 || $argc == 0)
         help nop
     end
+  
     if $ARM == 1
         if ($argc == 1)
             if ($cpsr->t &1)
@@ -2725,6 +2706,7 @@ define null
     if ( $argc >2 || $argc == 0)
         help null
     end
+ 
     if ($argc == 1)
 	    set *(unsigned char *)$arg0 = 0
     else
@@ -2741,7 +2723,6 @@ Syntax: null ADDR1 [ADDR2]
 end
 
 # FIXME: thumb breakpoint ?
-
 define int3
     if $argc != 1
         help int3
@@ -2790,6 +2771,7 @@ define patch
     set $patchaddr = $arg0
     set $patchbytes = $arg1
     set $patchsize = $arg2
+
     if ($patchsize == 1)
         set *(unsigned char*)$patchaddr = $patchbytes
     end
@@ -2818,7 +2800,6 @@ Syntax: patch address bytes size
 end
 
 # ____________________cflow___________________
-
 define print_insn_type
     if $argc != 1
         help print_insn_type
@@ -2919,9 +2900,11 @@ define step_to_call
     set $_saved_ctx = $SHOW_CONTEXT
     set $SHOW_CONTEXT = 0
     set $SHOW_NEST_INSN = 0
+ 
     set logging file /dev/null
     set logging redirect on
     set logging on
+ 
     set $_cont = 1
     while ($_cont > 0)
         stepi
@@ -2930,19 +2913,25 @@ define step_to_call
             set $_cont = 0
         end
     end
+
     set logging off
+
     if ($_saved_ctx > 0)
         context
     end
+
     set $SHOW_CONTEXT = $_saved_ctx
     set $SHOW_NEST_INSN = 0
+ 
     set logging file ~/gdb.txt
     set logging redirect off
     set logging on
+ 
     printf "step_to_call command stopped at:\n  "
     x/i $pc
     printf "\n"
     set logging off
+
 end
 document step_to_call
 Syntax: step_to_call
@@ -2953,17 +2942,21 @@ end
 
 
 define trace_calls
+
     printf "Tracing...please wait...\n"
+
     set $_saved_ctx = $SHOW_CONTEXT
     set $SHOW_CONTEXT = 0
     set $SHOW_NEST_INSN = 0
     set $_nest = 1
     set listsize 0
+  
     set logging overwrite on
     set logging file ~/gdb_trace_calls.txt
     set logging on
     set logging off
     set logging overwrite off
+
     while ($_nest > 0)
         get_insn_type $pc
         # handle nesting
@@ -2979,6 +2972,7 @@ define trace_calls
             set logging file ~/gdb_trace_calls.txt
             set logging redirect off
             set logging on
+
             set $x = $_nest - 2
             while ($x > 0)
                 printf "\t"
@@ -2986,6 +2980,7 @@ define trace_calls
             end
             x/i $pc
         end
+
         set logging off
         set logging file /dev/null
         set logging redirect on
@@ -2994,8 +2989,10 @@ define trace_calls
         set logging redirect off
         set logging off
     end
+
     set $SHOW_CONTEXT = $_saved_ctx
     set $SHOW_NEST_INSN = 0
+ 
     printf "Done, check ~/gdb_trace_calls.txt\n"
 end
 document trace_calls
@@ -3006,7 +3003,9 @@ end
 
 
 define trace_run
+ 
     printf "Tracing...please wait...\n"
+
     set $_saved_ctx = $SHOW_CONTEXT
     set $SHOW_CONTEXT = 0
     set $SHOW_NEST_INSN = 1
@@ -3015,7 +3014,9 @@ define trace_run
     set logging redirect on
     set logging on
     set $_nest = 1
+
     while ( $_nest > 0 )
+
         get_insn_type $pc
         # jmp, jcc, or cll
         if ($INSN_TYPE == 3)
@@ -3028,11 +3029,14 @@ define trace_run
         end
         stepi
     end
+
     printf "\n"
+
     set $SHOW_CONTEXT = $_saved_ctx
     set $SHOW_NEST_INSN = 0
     set logging redirect off
     set logging off
+
     # clean up trace file
     shell  grep -v ' at ' ~/gdb_trace_run.txt > ~/gdb_trace_run.1
     shell  grep -v ' in ' ~/gdb_trace_run.1 > ~/gdb_trace_run.txt
@@ -3046,11 +3050,15 @@ Syntax: trace_run
 end
 
 define entry_point
+	
 	set logging redirect on
 	set logging file /tmp/gdb-entry_point
 	set logging on
+
 	info files
+
 	set logging off
+
 	shell entry_point="$(/usr/bin/grep 'Entry point:' /tmp/gdb-entry_point | /usr/bin/awk '{ print $3 }')"; echo "$entry_point"; echo 'set $entry_point_address = '"$entry_point" > /tmp/gdb-entry_point
 	source /tmp/gdb-entry_point
     shell /bin/rm -f /tmp/gdb-entry_point
@@ -3070,13 +3078,17 @@ Syntax: break_entrypoint
 end
 
 define objc_symbols
+
 	set logging redirect on
 	set logging file /tmp/gdb-objc_symbols
 	set logging on
+
 	info target
+
 	set logging off
     # XXX: define paths for objc-symbols and SymTabCreator
 	shell target="$(/usr/bin/head -1 /tmp/gdb-objc_symbols | /usr/bin/head -1 | /usr/bin/awk -F '"' '{ print $2 }')"; objc-symbols "$target" | SymTabCreator -o /tmp/gdb-symtab
+
 	set logging on
 	add-symbol-file /tmp/gdb-symtab
 	set logging off
@@ -3124,13 +3136,13 @@ end
 
 
 # ____________________misc____________________
-
 define hook-stop
     if (sizeof(void*) == 8)
         set $64BITS = 1
     else
         set $64BITS = 0
     end
+
     if ($KDP64BITS != -1)
         if ($KDP64BITS == 0)
             set $64BITS = 0
@@ -3138,6 +3150,7 @@ define hook-stop
             set $64BITS = 1
         end
     end
+
     # Display instructions formats
     if $ARM == 1
         if $ARMOPCODES == 1
@@ -3150,6 +3163,7 @@ define hook-stop
             set disassembly-flavor att
         end
     end
+
     # this makes 'context' be called at every BP/step
     if ($SHOW_CONTEXT > 0)
         context
@@ -3172,7 +3186,6 @@ end
 # modified to work with Mac OS X by fG!
 # seems nasm shipping with Mac OS X has problems accepting input from stdin or heredoc
 # input is read into a variable and sent to a temporary file which nasm can read
-
 define assemble
     # dont enter routine again if user hits enter
     dont-repeat
@@ -3190,6 +3203,7 @@ define assemble
     printf " Do not forget to use NASM assembler syntax!\n"
     color_reset
     printf "End with a line saying just \"end\".\n"
+    
     if ($argc)
 	    if ($64BITS == 1)
 		    # argument specified, assemble instructions into memory at address specified.
@@ -3246,6 +3260,7 @@ define assemble32
     printf " Do not forget to use NASM assembler syntax!\n"
     color_reset
     printf "End with a line saying just \"end\".\n"
+    
     if ($argc)
         # argument specified, assemble instructions into memory at address specified.
         shell ASMOPCODE="$(while read -ep '>' r && test "$r" != end ; do echo -E "$r"; done)" ; GDBASMFILENAME=$RANDOM; \
@@ -3286,6 +3301,7 @@ define assemble64
     printf " Do not forget to use NASM assembler syntax!\n"
     color_reset
     printf "End with a line saying just \"end\".\n"
+    
     if ($argc)
         # argument specified, assemble instructions into memory at address specified.
         shell ASMOPCODE="$(while read -ep '>' r && test "$r" != end ; do echo -E "$r"; done)" ; GDBASMFILENAME=$RANDOM; \
@@ -3348,6 +3364,7 @@ end
 define assemble_gas
     printf "\nType code to assemble and hit Ctrl-D when finished.\n"
     printf "You must use GNU assembler (AT&T) syntax.\n"
+
     shell filename=$(mktemp); \
           binfilename=$(mktemp); \
           echo -e "Writing into: ${filename}\n"; \
@@ -3440,7 +3457,6 @@ end
 
 # _________________user tips_________________
 # The 'tips' command is used to provide tutorial-like info to the user
-
 define tips
     printf "Tip Topic Commands:\n"
     printf "\ttip_display : Automatically display values on each break\n"
@@ -3546,8 +3562,8 @@ Syntax: tip_display
 end
 
 # bunch of semi-useless commands
-# enable and disable shortcuts for stop-on-solib-events fantastic trick!
 
+# enable and disable shortcuts for stop-on-solib-events fantastic trick!
 define enablesolib
 	set stop-on-solib-events 1
 	printf "Stop-on-solib-events is enabled!\n"
@@ -3569,6 +3585,13 @@ end
 
 
 # enable commands for different displays
+define enabledisasm
+    set $SHOWDISASM = 1
+end
+document enabledisasm
+Syntax: enabledisasm
+| Enable disassembly display.
+end
 
 define enableobjectivec
 	set $SHOWOBJECTIVEC = 1
@@ -3607,6 +3630,13 @@ end
 
 
 # disable commands for different displays
+define disabledisasm
+    set $SHOWDISASM = 0
+end
+document disabledisasm
+Syntax: disabledisasm
+| Disable disassembly display.
+end
 
 define disableobjectivec
 	set $SHOWOBJECTIVEC = 0
@@ -3781,7 +3811,6 @@ Syntax: loadcmds MACHO_HEADER_START_ADDRESS
 end
 
 # defining it here doesn't get the space #$#$%"#!
-
 define disablecolorprompt
     set prompt gdb$
 end
@@ -3796,10 +3825,42 @@ document enablecolorprompt
 | Enable color prompt
 end
 
-
 #EOF
 
 # Older change logs:
+#   Version 8.0.6 (05/09/2013)
+#     - Add patch command to convert bytes to little-endian and patch memory
+#
+#   Version 8.0.5 (18/08/2013)
+#     - Add commands header and loadcmds to dump Mach-O header information
+#     - Other fixes and additions from previous commits
+#
+#   Version 8.0.4 (08/05/2013)
+#     - Detect automatically 32 or 64 bits archs using sizeof(void*). 
+#       Thanks to Tyilo for the simple but very effective idea!
+#     - Typo in hexdump command also fixed by vuquangtrong.
+#     - Add shortcuts to attach to VMware kernel debugging gdb stub (kernel32 and kernel64)
+#
+#   Version 8.0.3 (21/03/2013)
+#     - Add option to colorize or not output (thanks to argp and skier for the request and ideas!)
+#     - Convert the escape codes into functions so colors can be easily customized
+#     - Other enhancements available at git commit logs
+#       Thanks to Plouj, argp, xristos for their ideas and fixes!
+#
+#   Version 8.0.2 (31/07/2012)
+#     - Merge pull request from mheistermann to support local modifications in a .gdbinit.local file
+#     - Add a missing opcode to the stepo command
+#
+#   Version 8.0.1 (23/04/2012)
+#     - Small bug fix to the attsyntax and intelsyntax commands (changing X86 flavor variable was missing)
+#
+#   Version 8.0 (13/04/2012)
+#     - Merged x86/x64 and ARM versions
+#     - Added commands intelsyntax and attsyntax to switch between x86 disassembly flavors
+#     - Added new configuration variables ARM, ARMOPCODES, and X86FLAVOR
+#     - Code cleanups and fixes to the indentation
+#     - Bug fixes to some ARM related code
+#     - Added the dumpmacho command to memory dump the mach-o header to a file
 #
 #   Version 7.4.4 (02/01/2012)
 #     - Added the "skip" command. This will jump to the next instruction after EIP/RIP without executing the current one.
@@ -3965,4 +4026,3 @@ end
 #
 #   Version 2
 #     Radix bugfix by elaine
-# vim:set foldmethod=expr :
