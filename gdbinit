@@ -53,9 +53,9 @@ set $SHOWOBJECTIVEC = 1
 # set to 0 to remove display of cpu registers (default is 1)
 set $SHOWCPUREGISTERS = 1
 # set to 1 to enable display of stack (default is 0)
-set $SHOWSTACK = 0
+set $SHOWSTACK = 1
 # set to 1 to enable display of data window (default is 0)
-set $SHOWDATAWIN = 0
+set $SHOWDATAWIN = 1
 # set to 0 to disable colored display of changed registers
 set $SHOWREGCHANGES = 1
 # set to 1 so skip command to execute the instruction at the new location
@@ -67,7 +67,7 @@ set $SKIPSTEP = 1
 # show the ARM opcodes - change to 0 if you don't want such thing (in x/i command)
 set $ARMOPCODES = 0
 # x86 disassembly flavor: 0 for Intel, 1 for AT&T
-set $X86FLAVOR = 0
+set $X86FLAVOR = 1
 # use colorized output or not
 set $USECOLOR = 1
 # to use with remote KDP
@@ -186,7 +186,7 @@ end
 # this way anyone can have their custom prompt - argp's idea :-)
 # can also be used to redefine anything else in particular the colors aka theming
 # just remap the color variables defined above
-source ~/.gdbinit.local
+# source ~/.gdbinit.local
 
 # can't use the color functions because we are using the set command
 if $COLOREDPROMPT == 1

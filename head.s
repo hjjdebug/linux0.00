@@ -133,7 +133,10 @@ ignore_int:
 	pop %ds
 	iret
 
-/* Timer interrupt handler */ 
+	/* Timer interrupt handler */
+	/* 时钟中断地址: cs:offset 是中断门设置的.
+ss:	offset, 当发生在用户态时,从tss中获取, 当发生在内核态,则直接使用内核态堆栈
+	*/
 .align 2
 timer_interrupt:
 	push %ds
