@@ -1,19 +1,19 @@
-#  head.s contains the 32-bit startup code.
-#  Two L3 task multitasking. The code of tasks are in kernel area, 
-#  The kernel code has moved from 0x10000 to 0
-SCRN_SEL	= 0x18
-TSS0_SEL	= 0x20
-LDT0_SEL	= 0x28
-TSS1_SEL	= 0X30
-LDT1_SEL	= 0x38
-.global startup_32
-.text
+	#  head.s contains the 32-bit startup code.
+	#  Two L3 task multitasking. The code of tasks are in kernel area, 
+	#  The kernel code has moved from 0x10000 to 0
+	SCRN_SEL	= 0x18
+	TSS0_SEL	= 0x20
+	LDT0_SEL	= 0x28
+	TSS1_SEL	= 0X30
+	LDT1_SEL	= 0x38
+	.global startup_32
+	.text
 startup_32:
 	movl $0x10,%eax
 	mov %ax,%ds
 	lss init_stack,%esp
 
-# setup base fields of descriptors.
+	# setup base fields of descriptors.
 	call setup_idt
 	call setup_gdt
 	movl $0x10,%eax		# reload all the segment registers
@@ -23,17 +23,17 @@ startup_32:
 	mov %ax,%gs
 	lss init_stack,%esp
 
-# setup up timer 8253 chip.
-	movb $0x36, %al
-	movl $0x43, %edx
-	outb %al, %dx
-	movl $11930, %eax        # timer frequency 100 HZ 
-	movl $0x40, %edx
-	outb %al, %dx
-	movb %ah, %al
-	outb %al, %dx
+	# setup up timer 8253 chip.
+ 	movb $0x36, %al		# 0b00111100,寄存器0(00),读写低,高字节(11),方式2(110),二进制数(0)
+ 	movl $0x43, %edx		# 0x43 通道控制字地址
+ 	outb %al, %dx
+ 	movl $11930, %eax        # timer frequency 100 HZ , 时钟是1.19318M,故11930分频
+ 	movl $0x40, %edx		# 0x40 计数器0 数据寄存器地址
+ 	outb %al, %dx			# 设置计数器初值,先低后高
+ 	movb %ah, %al
+ 	outb %al, %dx
 
-# setup timer & system call interrupt descriptors.
+	# setup timer & system call interrupt descriptors.
 	movl $0x00080000, %eax	# eax 高字为0x0008, 内核代码段选择子	
 	movw $timer_interrupt, %ax		# 地址低16位
 	movw $0x8E00, %dx			#edx 高16位为0,表示地址偏移高16为0, 类型14(中断门),8->存在，特权级0
@@ -50,13 +50,14 @@ startup_32:
 	movl %eax,(%esi) 
 	movl %edx,4(%esi)
 
-# unmask the timer interrupt.
-#	movl $0x21, %edx
-#	inb %dx, %al
-#	andb $0xfe, %al
-#	outb %al, %dx 
+	# unmask the timer interrupt. 代码好像可以屏蔽,因为读来的是0xb8
+ 	movl $0x21, %edx
+ 	inb %dx, %al
+ 	andb $0xfe, %al
+	#	orb $1,%al		# hjj add, 可屏蔽掉定时中断, 方便观察int 80, iret 指令
+ 	outb %al, %dx 
 
-# Move to user mode (task 0)
+	# Move to user mode (task 0)
 	pushfl
 	andl $0xffffbfff, (%esp)
 	popfl
@@ -66,18 +67,18 @@ startup_32:
 	lldt %ax 		# 加载ldt表，这个描述符确定了ldt表的基址和大小
 	movl $0, current
 	sti
-	pushl $0x17		#任务0 数据段选择子
+	pushl $0x17		#任务0 ss段选择子
 	pushl $init_stack
 	pushfl
-	pushl $0x0f		#任务0 代码段选择子
+	pushl $0x0f		#任务0 cs段选择子
 	pushl $task0
 	iret		# 代码段cs=0x0f, 所以请求的特权级是3, 且使用ldt 表,ldt表选择子0x8
-				# 堆栈段ss=0x17, 所以请求的优先级是3,使用ldt表，ldt表选择子0x10
-				# ldt表中代码段描述符应该和gdt中代码段描述符一致，以便能够有共同的符号编址
-				# 同理数据段也一样，如果数据段与代码段共用一个起始地址，则代码与数据能统一编址
-				# 该程序就是这么做的，这好像叫地址的平坦模式吧！
+	# 堆栈段ss=0x17, 所以请求的优先级是3,使用ldt表，ldt表选择子0x10
+	# ldt表中代码段描述符应该和gdt中代码段描述符一致，以便能够有共同的符号编址
+	# 同理数据段也一样，如果数据段与代码段共用一个起始地址，则代码与数据能统一编址
+	# 该程序就是这么做的，这好像叫地址的平坦模式吧！
 
-/****************************************/
+	/****************************************/
 setup_gdt:
 	lgdt lgdt_opcode
 	ret
@@ -98,11 +99,11 @@ rp_sidt:
 	lidt lidt_opcode
 	ret
 
-# -----------------------------------
+	# -----------------------------------
 write_char:
 	push %gs
 	pushl %ebx
-#	pushl %eax
+	#	pushl %eax
 	mov $SCRN_SEL, %ebx
 	mov %bx, %gs		#重设gs段寄存器，使它执行一个新的段基址0xb8000
 	movl scr_loc, %ebx		# scr_loc 是个内存, 最初设置为0
@@ -114,14 +115,14 @@ write_char:
 	jb 1f
 	movl $0, %ebx
 1:	movl %ebx, scr_loc	
-#	popl %eax
+	#	popl %eax
 	popl %ebx
 	pop %gs
 	ret
 
-/***********************************************/
-/* This is the default interrupt "handler" :-) */
-.align 2
+	/***********************************************/
+	/* This is the default interrupt "handler" :-) */
+	.align 2
 ignore_int:
 	push %ds
 	pushl %eax
@@ -137,7 +138,7 @@ ignore_int:
 	/* 时钟中断地址: cs:offset 是中断门设置的.
 ss:	offset, 当发生在用户态时,从tss中获取, 当发生在内核态,则直接使用内核态堆栈
 	*/
-.align 2
+	.align 2
 timer_interrupt:
 	push %ds
 	pushl %eax
@@ -157,13 +158,18 @@ timer_interrupt:
 	pop %ds
 	iret
 
-/* system call handler */
-/* 系统中断时，cs, ss 是如何得到的？
-系统中断是cs段寄存器,cs: 0x8 ,中断门设定的段选择子,偏移system_interrupt
-             ss段寄存器,ss: 0x10, TSS段中设定的ss0 ,偏移krn_stk0 or krn_stk1, 看中断是那个任务调用的
-			 不同任务，对应了不同的tss段，由tr寄存器指定, tr寄存器由任务切换ljmp tssSelector 转换
-			 */
-.align 2
+	/* system call handler */
+	/* 系统中断时，cs, ss 是如何得到的？
+	系统中断(int 80)
+	cs段寄存器,cs: 0x8 ,中断门设定的段选择子,
+	偏移system_interrupt
+    ss段寄存器,ss: 0x10, TSS段中设定的ss0 ,
+	偏移krn_stk0 or krn_stk1, 看中断是那个任务调用的
+	不同任务，对应了不同的tss段，由tr寄存器指定,
+	tr寄存器由任务切换ljmp tssSelector 转换
+	就是说,当调用int 80时, 不同的任务,使用不同的内核堆栈
+	*/
+	.align 2
 system_interrupt:
 	push %ds
 	pushl %edx
@@ -176,11 +182,11 @@ system_interrupt:
 	pop %ds
 	iret
 
-/*********************************************/
+	/*********************************************/
 current:.long 0
 scr_loc:.long 0
 
-.align 2
+	.align 2
 lidt_opcode:
 	.word 256*8-1		# idt contains 256 entries
 	.long idt		# This will be rewrite by code. 
@@ -195,10 +201,10 @@ gdt:	.quad 0x0000000000000000	/* NULL descriptor */
 	.quad 0x00c09a00000007ff	/* 8Mb 0x08, base = 0x00000,段限长8M,段类型a */
 	.quad 0x00c09200000007ff	/* 8Mb 0x10, base =0x0, 段限长8M,段类型2*/
 	.quad 0x00c0920b80000002	/* screen 0x18 - for display */
-#	.word 0x0002,0x8000,0x920b,0x00c0 /* 段限长0x0002*4K base = 0x0b8000,属性c0高4bit,颗粒度，d/b位，保留2位 */
-#	低4bit是段限长高位(段限长20bits)	属性92. 前4bit, P,DPL,S(0为系统段，1为代码或数据),后4bit为段类型2
+	#	.word 0x0002,0x8000,0x920b,0x00c0 /* 段限长0x0002*4K base = 0x0b8000,属性c0高4bit,颗粒度，d/b位，保留2位 */
+	#	低4bit是段限长高位(段限长20bits)	属性92. 前4bit, P,DPL,S(0为系统段，1为代码或数据),后4bit为段类型2
 
-#		段限长， 偏移低16, 属性+偏移16-24, 偏移24-32位,,粒度为0,byte为单位,属性e,描述符优先级为3级.
+	#		段限长， 偏移低16, 属性+偏移16-24, 偏移24-32位,,粒度为0,byte为单位,属性e,描述符优先级为3级.
 	.word 0x0068, tss0, 0xe900, 0x0000	# TSS0 descr 0x20	,段类型为9	起始地址tss0,段限长0x68,24bit-20bit的0(粒度为byte,d/b为0,2bit保留）
 	.word 0x0040, ldt0, 0xe200, 0x0000	# LDT0 descr 0x28	,段类型为2  起始地址ldt0,段限长0x40,24bit-20bit的0(粒度为byte,d/b为0,2bit保留）
 	.word 0x0068, tss1, 0xe900, 0x0000	# TSS1 descr 0x30
@@ -209,13 +215,16 @@ init_stack:                          # Will be used as user stack for task0.
 	.long init_stack
 	.word 0x10
 
-/*************************************/
-.align 8
+	####################################################################	
+	# 任务0	
+	# ldt local descriptor table, 本地描述符表	
+	.align 8
 ldt0:	.quad 0x0000000000000000
 	.quad 0x00c0fa00000003ff	# 0x0f, base = 0x00000,限长1k*4096	代码段
-#	.quad 0x00c09a00000003ff	# 0x08, base = 0x00000, 产生异常实验,权限变动
+	#	.quad 0x00c09a00000003ff	# 0x08, base = 0x00000, 产生异常实验,权限变动
 	.quad 0x00c0f200000003ff	# 0x17, base = 0,限长1k*4K	数据段
-
+	
+	# tss task state segment, 任务状态段
 tss0:	.long 0 			/* back link */
 	.long krn_stk0, 0x10		/* esp0, ss0 */
 	.long 0, 0, 0, 0, 0		/* esp1, ss1, esp2, ss2, cr3 */
@@ -224,12 +233,23 @@ tss0:	.long 0 			/* back link */
 	.long 0, 0, 0, 0, 0, 0 		/* es, cs, ss, ds, fs, gs */
 	.long LDT0_SEL, 0x8000000	/* ldt, trace bitmap */
 
+	# 任务中断时内核堆栈	
 	.fill 128,4,0
 krn_stk0:
-#	.long 0
 
-/************************************/
-.align 8
+	# 任务0	
+task0:
+	movl $0x17, %eax
+	movw %ax, %ds			/* ds not set yet, so set it */
+	movb $65, %al              /* print 'A' */
+	int $0x80				/* call system-call */
+	movl $0xfff, %ecx
+1:	loop 1b
+	jmp task0 
+
+	####################################################################
+	# 任务1	
+	.align 8
 ldt1:	.quad 0x0000000000000000
 	.quad 0x00c0fa00000003ff	# 0x0f, base = 0x00000,与gdt代码段一致,段限4Mb,属性fa,说明描述符优先级为3,代码/数据bit, 类型为a(代码）
 	.quad 0x00c0f200000003ff	# 0x17
@@ -246,16 +266,6 @@ tss1:	.long 0 			/* back link */
 	.fill 128,4,0
 krn_stk1:
 
-/************************************/
-task0:
-	movl $0x17, %eax
-	movw %ax, %ds			/* ds not set yet, so set it */
-	movb $65, %al              /* print 'A' */
-	int $0x80				/* call system-call */
-	movl $0xfff, %ecx
-1:	loop 1b
-	jmp task0 
-
 task1:
 	movl $0x17, %eax
 	movw %ax, %ds
@@ -268,4 +278,4 @@ task1:
 
 	.fill 128,4,0 
 usr_stk1:
-/* vim:set fdm=manual: */ 
+	/* vim:set fdm=manual: */ 

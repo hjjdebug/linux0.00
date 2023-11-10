@@ -1,9 +1,9 @@
 1. boot 由于是8086格式的文件,gdb 是不能调试的. 若一定要调试,推荐用bochs
-2. system 是80386格式文件, gdb 可以调试. 方法:
+2. head 是80386格式文件, gdb 可以调试. 方法:
 
 a: 启动qemu 系统,并等待gdb 接入, make debug
 b: gdb 调试: 加载文件,设定断点,接入系统,单步调试
- gdb system
+ gdb head
  b *0x0
  target remote localhost:1234
 

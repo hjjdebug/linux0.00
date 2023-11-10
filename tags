@@ -22,6 +22,9 @@ TSS1_SEL	head.s	/^TSS1_SEL	= 0X30$/;"	d
 die	boot.s	/^die:	jmp	die$/;"	l
 end_gdt	head.s	/^end_gdt:$/;"	l
 entry	boot.s	/^entry start$/;"	l
+f	Makefile	/^	dd if=boot of=Image bs=32 skip=1$/;"	m
+f	Makefile	/^	qemu-system-i386 -m 16M -boot a  -drive if=floppy,file=Image,format=raw $/;"	m
+f	Makefile	/^	qemu-system-i386 -m 16M -boot a  -drive if=floppy,file=Image,format=raw -s -S$/;"	m
 gdt	boot.s	/^gdt:	.word	0,0,0,0		! dummy, 64bits ($/;"	l
 gdt	head.s	/^gdt:	.quad 0x0000000000000000	\/* NULL descriptor *\/$/;"	l
 gdt_48	boot.s	/^gdt_48: .word	0x7ff		! gdt limit=2048, 256 GDT entries$/;"	l
@@ -39,10 +42,10 @@ lidt_opcode	head.s	/^lidt_opcode:$/;"	l
 load_system	boot.s	/^load_system:$/;"	l
 ok_load	boot.s	/^ok_load:$/;"	l
 rp_sidt	head.s	/^rp_sidt:$/;"	l
-s	Makefile	/^	dd bs=32 if=boot of=Image skip=1$/;"	m
 s	Makefile	/^	dd bs=8192 if=Image of=\/dev\/fd0$/;"	m
 setup_gdt	head.s	/^setup_gdt:$/;"	l
 setup_idt	head.s	/^setup_idt:$/;"	l
+ss	head.s	/^ss:	offset, 当发生在用户态时,从tss中获取, 当发生在内核态,则直接使用内核态堆栈$/;"	l
 start	boot.s	/^start:$/;"	l
 startup_32	head.s	/^startup_32:$/;"	l
 system_interrupt	head.s	/^system_interrupt:$/;"	l

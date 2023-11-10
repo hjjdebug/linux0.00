@@ -21,27 +21,27 @@ BOCHS = bochs
 all:	Image
 
 #boot 删掉前面32bytes才是512bytes 的引导扇区
-Image: boot system
-	dd bs=32 if=boot of=Image skip=1
-	objcopy -O binary system head
-	cat head >> Image
-
-disk: Image
-	dd bs=8192 if=Image of=/dev/fd0
-	sync;sync;sync
-
-head.o: head.s
-	$(AS) $(ASFLAGS) -o $@ $< > head.lst
-
-system:	head.o 
-	$(LD) $(LDFLAGS) head.o  -o system > System.map
+Image: boot head
+	dd if=boot of=Image bs=32 skip=1
+	objcopy -O binary head bin_head
+	cat bin_head >> Image
 
 boot:	boot.s
 	$(AS86) -o boot.o boot.s
 	$(LD86) -s -o boot boot.o
 
+head.o: head.s
+	$(AS) $(ASFLAGS) -o $@ $< > head.lst
+
+head:	head.o 
+	$(LD) $(LDFLAGS) head.o  -o head > head.map
+
 clean:
-	rm -f Image System.map core boot head *.o system
+	rm -f Image head.map core boot head *.o head
+
+disk: Image
+	dd bs=8192 if=Image of=/dev/fd0
+	sync;sync;sync
 
 
 bochs-run:
